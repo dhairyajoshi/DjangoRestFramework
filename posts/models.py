@@ -26,9 +26,9 @@ class Post(models.Model):
 
 
 class Notification(models.Model):
-    sender= models.CharField(max_length=150)
-    receiver= models.CharField(max_length=150)
-    post = models.CharField(max_length=150)
+    sender= models.CharField(max_length=150,default='none')
+    receiver= models.CharField(max_length=150,default='none')
+    post = models.CharField(max_length=150,default='none')
     pic= models.ImageField(_("Image"),upload_to=upload_to_notif,default='notifs/default.jpg')
     date= models.DateTimeField(auto_now_add=True)
 
@@ -36,4 +36,4 @@ class Notification(models.Model):
         return f'{self.sender} liked {self.receiver}\'s post'
 
 
-        
+         

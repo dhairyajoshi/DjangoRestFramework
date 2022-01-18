@@ -3,5 +3,6 @@ from . import views
 
 urlpatterns=[
     path('updatepic/<int:id>',views.updatePic),
-    path('register/',views.registerUser)
+    path('register/',views.registerUser),
+    path('getnotifs',views.getnotifs)
 ]

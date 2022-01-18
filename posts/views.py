@@ -1,22 +1,31 @@
 from cgi import parse_multipart
 from django.shortcuts import render
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from .serializers import NotificationSerializer, PostSerializer
-from rest_framework.permissions import IsAuthenticated
 from .models import Notification, Post
-# Create your views here.
-@api_view(['GET'])
 
+# Create your views here.
+
+
+@api_view(['GET'])
 def getposts(request):
+    if not request.user.is_authenticated:
+        return Response({'error':'user not authenticated'})
+
     data= Post.objects.all()
+
+    print(data)
 
     serialized = PostSerializer(data,many=True)
 
     return Response(serialized.data)
 
+
 @api_view(['GET'])
 def getpost(request,id):
+    if not request.user.is_authenticated:
+        return Response({'error':'user not authenticated'})
     data= Post.objects.get(id=id)
 
     serialized = PostSerializer(data,many=False)
@@ -26,6 +35,8 @@ def getpost(request,id):
 
 @api_view(['POST'])
 def addpost(request):
+    if not request.user.is_authenticated:
+        return Response({'error':'user not authenticated'})
     serialized = PostSerializer(data=request.data)
 
     if serialized.is_valid():
@@ -33,8 +44,11 @@ def addpost(request):
 
     return Response(serialized.data)
 
+
 @api_view(['POST'])
 def likepost(request,id):
+    if not request.user.is_authenticated:
+        return Response({'error':'user not authenticated'})
     post = Post.objects.get(id=id)
     post.likes= post.likes+1
     sender=request.user
@@ -58,3 +72,5 @@ def likepost(request,id):
 
     res={"msg":"post likes updated!"}
     return Response(res)
+
+
