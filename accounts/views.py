@@ -45,8 +45,23 @@ def getnotifs(request):
 
     data= Notification.objects.filter(receiver=request.user.username)
 
-    print(data) 
-
     serialized = NotificationSerializer(data,many=True)
 
+    response=serialized.data
+
+    data.delete()
+
+    return Response(response)
+
+@api_view(['GET'])
+def getinfo(request):
+    if not request.user.is_authenticated:
+        return Response({'error':'user not authenticated'})
+
+    data= NewUser.objects.get(username=request.user.username)
+
+    serialized = CustomUserSerializer(data,many=False)
+
     return Response(serialized.data)
+
+    
