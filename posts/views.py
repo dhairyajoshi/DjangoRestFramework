@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from .serializers import NotificationSerializer, PostSerializer
 from .models import Notification, Post
-
+from accounts.models import NewUser
 # Create your views here.
 
 
@@ -15,7 +15,6 @@ def getposts(request):
 
     data= Post.objects.all()
 
-    print(data)
 
     serialized = PostSerializer(data,many=True)
 
@@ -41,6 +40,9 @@ def addpost(request):
 
     if serialized.is_valid():
         serialized.save(username= request.user.username,user=request.user)
+        user = NewUser.objects.get(username=request.user.username)
+        user.posts=user.posts+1
+        user.save()
 
     return Response(serialized.data)
 
@@ -61,12 +63,13 @@ def likepost(request,id):
 
     )
  
-    serialized=NotificationSerializer(data=notification)
+    # serialized=NotificationSerializer(data=notification)
 
-    if serialized.is_valid(): 
-        serialized.save()
-    else:
-        print(serialized.error_messages) 
+    
+    user= NewUser.objects.get(username=post.user.username)
+    user.likes= user.likes+1
+    user.save()
+    
 
     post.save() 
 
