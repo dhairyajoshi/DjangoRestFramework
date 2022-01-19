@@ -7,21 +7,23 @@ from . models import NewUser
 from .serializers import CustomUserSerializer
 from posts.serializers import NotificationSerializer
 from posts.models import Notification
-
+from rest_framework_simplejwt.tokens import RefreshToken
 # Create your views here.
 
 @api_view(['POST'])
-def updatePic(request,id):
+def updatePic(request):
+    if not request.user.is_authenticated:
+        return Response({'error':'user not authenticated'})
+
+    user= NewUser.objects.get(id=request.user.id)
+
+    data= request.data
     
-    try:
-        user= NewUser.objects.get(id=id)
-    except NewUser.DoesNotExist:
-        return Response({'msg':'user not found'})
+    user.pfp=data['pfp']
 
-    serialized= CustomUserSerializer(user,data=request.data) 
+    user.save()
 
-    if serialized.is_valid():
-        serialized.save()
+    serialized= CustomUserSerializer(user)
 
     return Response(serialized.data)  
 
@@ -31,13 +33,39 @@ def updatePic(request,id):
 @api_view(['POST'])
 def registerUser(request):  
     serialized= CustomUserSerializer(data=request.data)
-
+    data={}
     if serialized.is_valid():
-        serialized.save() 
+        instance=serialized.save() 
+        refresh = RefreshToken.for_user(instance)
+        data['user']=serialized.data
+        data['token']=str(refresh.access_token)
 
-    return Response(serialized.data)
 
+    return Response(data)
 
+@api_view(['POST'])
+def loginUser(request):  
+    
+    data={}
+    reqdata= request.data
+    username=reqdata['username']
+    password=reqdata['password']
+
+    user = NewUser.objects.get(username=username)
+    serialized= CustomUserSerializer(user)
+
+    if user.check_password(password):
+        refresh = RefreshToken.for_user(user)
+        data['user']=serialized.data
+        data['token']=str(refresh.access_token) 
+    
+    else: 
+        data['error']='wrong credentials'
+    
+
+    return Response(data)
+
+  
 @api_view(['GET'])
 def getnotifs(request):
     if not request.user.is_authenticated:
