@@ -9,25 +9,35 @@ from posts.serializers import NotificationSerializer
 from posts.models import Notification
 from rest_framework_simplejwt.tokens import RefreshToken
 # Create your views here.
-
+    
 @api_view(['POST'])
-def updatePic(request):
+def updateProfile(request):
     if not request.user.is_authenticated:
         return Response({'error':'user not authenticated'})
 
     user= NewUser.objects.get(id=request.user.id)
 
     data= request.data
+
+    chk=data['username']
+
+    checkdata= NewUser.objects.get(username=chk)
+
+    if(checkdata.count()>0):
+        return Response({'error':'username already exists'})
     
+    user.first_name=data['first_name']
+    user.cfp=data['cfp']
     user.pfp=data['pfp']
+    user.bio=data['bio']
+
+
 
     user.save()
 
     serialized= CustomUserSerializer(user)
 
     return Response(serialized.data)  
-
-    
   
 
 @api_view(['POST'])
@@ -56,7 +66,7 @@ def loginUser(request):
 
     if user.check_password(password):
         refresh = RefreshToken.for_user(user)
-        data['user']=serialized.data
+        # data['user']=serialized.data
         data['token']=str(refresh.access_token) 
     
     else: 

@@ -38,10 +38,15 @@ class CustomAccountManager(BaseUserManager):
 def  upload_to_pfp(instance,filename):
     return 'pfps/{filename}'.format(filename=filename)
 
+def  upload_to_cfp(instance,filename):
+    return 'cfps/{filename}'.format(filename=filename)
+
 class NewUser(AbstractBaseUser, PermissionsMixin):
     username=models.CharField(max_length=150, unique=True)
+    bio= models.TextField(default="")
     first_name = models.CharField(max_length=150, blank=True)
     pfp= models.ImageField(_("Image"),upload_to=upload_to_pfp,default='pfps/default.jpg')
+    cfp= models.ImageField(_("Image"),upload_to=upload_to_cfp,default='cfps/default.jpg')
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     posts= models.IntegerField(default=0)
