@@ -39,6 +39,8 @@ def updatePfp(request):
     data= request.data
     user.pfp=data['pfp']
 
+    serialized=CustomUserSerializer(user)
+
     userposts= Post.objects.filter(user=request.user)
 
     for u in userposts:
@@ -47,8 +49,9 @@ def updatePfp(request):
     
 
     user.save()
+    
 
-    return Response({'msg':'Updated successfully'})  
+    return Response(serialized.data)  
 
 @api_view(['POST'])
 def updateCfp(request):
@@ -60,10 +63,12 @@ def updateCfp(request):
     data= request.data
     user.cfp=data['cfp']
     
-
+    serialized=CustomUserSerializer(user)
     user.save()
 
-    return Response({'msg':'Updated successfully'})  
+    return Response(serialized.data)  
+
+    
 @api_view(['POST'])
 def registerUser(request):  
     serialized= CustomUserSerializer(data=request.data)
