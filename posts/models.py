@@ -27,7 +27,7 @@ class Post(models.Model):
     pfp= models.ImageField(_("Image"),upload_to=upload_to_pfp,default="pfps/default.jgp")
     likes= models.IntegerField(default=0)
     date=models.DateTimeField(auto_now_add=True)
-    status= models.CharField(max_length=10,choices=options, default='d')
+    status= models.CharField(max_length=10,choices=options, default='p')
 
     def __str__(self):
         return self.caption 
