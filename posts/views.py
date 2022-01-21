@@ -13,7 +13,13 @@ def getposts(request):
     if not request.user.is_authenticated:
         return Response({'error':'user not authenticated'})
 
-    data= Post.objects.all().order_by('-date')
+    if request.user.is_staff:
+        data= Post.objects.all().order_by('-date')
+        serialized = PostSerializer(data,many=True)
+
+        return Response(serialized.data) 
+
+    data= Post.objects.all().filter(status='p').order_by('-date') | Post.objects.all().filter(username=request.user).order_by('-date') | Post.objects.all().filter(username=request.user).order_by('-date')
 
 
     serialized = PostSerializer(data,many=True)

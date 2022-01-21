@@ -15,6 +15,9 @@ def  upload_to_notif(instance,filename):
 
 class Post(models.Model):
 
+    options=(('d', 'Draft'),
+    ('p', 'Published'),)
+
     caption= models.CharField(max_length=150)
     username= models.CharField(max_length=150,default="none")
     user= models.ForeignKey(
@@ -24,6 +27,7 @@ class Post(models.Model):
     pfp= models.ImageField(_("Image"),upload_to=upload_to_pfp,default="pfps/default.jgp")
     likes= models.IntegerField(default=0)
     date=models.DateTimeField(auto_now_add=True)
+    status= models.CharField(max_length=10,choices=options, default='d')
 
     def __str__(self):
         return self.caption 

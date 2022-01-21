@@ -8,8 +8,8 @@ from django.db import models
 
 class UserAdminConfig(UserAdmin):
     model = NewUser
-    # search_fields = ('email', 'username', 'first_name',)
-    # list_filter = ('email', 'username', 'first_name', 'is_active', 'is_staff')
+    search_fields = ('username', 'first_name',)
+    list_filter = ( 'username', 'first_name', 'is_active', 'is_staff')
     list_display = ('username', 'id', 'first_name', 'is_active', 'is_staff')
     fieldsets = (
         (None, {'fields': ('username', 'first_name','pfp','password')}),  
