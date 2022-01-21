@@ -81,7 +81,7 @@ def likepost(request,id):
         user.save()
         post.save() 
         notifs.delete()
-        return Response({'msg':'post unliked'})
+        return Response({'count':post.likes,'msg':'1'})
 
     post.likes= post.likes+1
     notification = Notification.objects.create(
@@ -103,7 +103,7 @@ def likepost(request,id):
 
     post.save() 
 
-    res={"msg":"post liked"}
+    res={'count':post.likes,'msg':'0'}
     return Response(res)
 
 @api_view(['GET'])
