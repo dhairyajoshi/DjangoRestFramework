@@ -18,28 +18,45 @@ def updateProfile(request):
     user= NewUser.objects.get(id=request.user.id)
 
     data= request.data
-
-    chk=data['username']
-
-    checkdata= NewUser.objects.get(username=chk)
-
-    if(checkdata.count()>0):
-        return Response({'error':'username already exists'})
+    first_name=data['first_name']
+    bio= data['bio']
     
-    user.first_name=data['first_name']
-    user.cfp=data['cfp']
-    user.pfp=data['pfp']
-    user.bio=data['bio']
-
-
+    user.first_name=first_name
+    user.bio=bio
 
     user.save()
 
-    serialized= CustomUserSerializer(user)
+    return Response({'msg':'Updated successfully'})  
+   
+@api_view(['POST'])
+def updatePfp(request):
+    if not request.user.is_authenticated:
+        return Response({'error':'user not authenticated'})
 
-    return Response(serialized.data)  
-  
+    user= NewUser.objects.get(id=request.user.id)
 
+    data= request.data
+    user.pfp=data['pfp']
+    
+
+    user.save()
+
+    return Response({'msg':'Updated successfully'})  
+
+@api_view(['POST'])
+def updateCfp(request):
+    if not request.user.is_authenticated:
+        return Response({'error':'user not authenticated'})
+
+    user= NewUser.objects.get(id=request.user.id)
+
+    data= request.data
+    user.cfp=data['cfp']
+    
+
+    user.save()
+
+    return Response({'msg':'Updated successfully'})  
 @api_view(['POST'])
 def registerUser(request):  
     serialized= CustomUserSerializer(data=request.data)
@@ -47,7 +64,6 @@ def registerUser(request):
     if serialized.is_valid():
         instance=serialized.save() 
         refresh = RefreshToken.for_user(instance)
-        data['user']=serialized.data
         data['token']=str(refresh.access_token)
 
 
@@ -81,13 +97,12 @@ def getnotifs(request):
     if not request.user.is_authenticated:
         return Response({'error':'user not authenticated'})
 
-    data= Notification.objects.filter(receiver=request.user.username)
+    data= Notification.objects.filter(receiver=request.user.username).exclude(sender=request.user).order_by('-date')
 
     serialized = NotificationSerializer(data,many=True)
 
     response=serialized.data
 
-    data.delete()
 
     return Response(response)
 
@@ -103,3 +118,13 @@ def getinfo(request):
     return Response(serialized.data)
 
     
+@api_view(['GET'])
+def getinfoUsr(request,usr):
+    if not request.user.is_authenticated:
+        return Response({'error':'user not authenticated'})
+
+    data= NewUser.objects.get(username=usr)
+
+    serialized = CustomUserSerializer(data,many=False)
+
+    return Response(serialized.data)

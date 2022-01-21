@@ -13,12 +13,12 @@ def getposts(request):
     if not request.user.is_authenticated:
         return Response({'error':'user not authenticated'})
 
-    data= Post.objects.all()
+    data= Post.objects.all().order_by('-date')
 
 
     serialized = PostSerializer(data,many=True)
 
-    return Response(serialized.data)
+    return Response(serialized.data) 
 
 
 @api_view(['GET'])
@@ -30,6 +30,18 @@ def getpost(request,id):
     serialized = PostSerializer(data,many=False)
 
     return Response(serialized.data)
+
+@api_view(['GET'])
+def sortedposts(request):
+    if not request.user.is_authenticated:
+        return Response({'error':'user not authenticated'})
+
+    data= Post.objects.all().order_by('likes')
+
+    serialized=PostSerializer(data,many=True)
+
+    return Response(serialized.data)
+
 
 
 @api_view(['POST'])
@@ -44,10 +56,10 @@ def addpost(request):
         user.posts=user.posts+1
         user.save()
 
-    return Response(serialized.data)
+    return Response({'msg':'Uploaded successfully'})
 
 
-@api_view(['POST'])
+@api_view(['POST']) 
 def likepost(request,id):
     if not request.user.is_authenticated:
         return Response({'error':'user not authenticated'})
