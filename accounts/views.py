@@ -8,6 +8,7 @@ from .serializers import CustomUserSerializer
 from posts.serializers import NotificationSerializer
 from posts.models import Notification
 from rest_framework_simplejwt.tokens import RefreshToken
+from posts.models import Post
 # Create your views here.
     
 @api_view(['POST'])
@@ -37,6 +38,12 @@ def updatePfp(request):
 
     data= request.data
     user.pfp=data['pfp']
+
+    userposts= Post.objects.filter(user=request.user)
+
+    for u in userposts:
+        u.pfp=user.pfp
+        u.save()
     
 
     user.save()
