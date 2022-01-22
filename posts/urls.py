@@ -7,6 +7,5 @@ urlpatterns=[
     path('getposts/<int:id>',views.getpost),
     path('sortedposts',views.sortedposts),
     path('addpost',views.addpost),
-    path('likepost/<int:id>',views.likepost),
-    path('isliked/<int:id>',views.isLiked)
+    path('likepost/<int:id>/<str:act>',views.likepost)
 ]

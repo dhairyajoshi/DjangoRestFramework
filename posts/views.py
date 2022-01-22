@@ -66,7 +66,7 @@ def addpost(request):
 
 
 @api_view(['POST']) 
-def likepost(request,id):
+def likepost(request,id,act):
     if not request.user.is_authenticated:
         return Response({'error':'user not authenticated'})
     post = Post.objects.get(id=id)
@@ -74,50 +74,64 @@ def likepost(request,id):
 
     notifs=Notification.objects.filter(sender=sender,post_id=id)
 
-    if notifs.count()>0:
-        post.likes=post.likes-1
+    if(act=='like'):
+    
+        if notifs.count()>0:
+
+            post.likes=post.likes-1
+            user= NewUser.objects.get(username=post.user.username)
+            user.likes= user.likes-1
+            user.save()
+            post.save() 
+            notifs.delete()
+            return Response({'count':post.likes,'msg':'1'})
+
+
+        post.likes= post.likes+1
+        Notification.objects.create(
+            sender=sender.username,
+            receiver=post.username,
+            post=post.caption, 
+            pic=post.pic,
+            post_id=post.id
+
+        )
+            
         user= NewUser.objects.get(username=post.user.username)
-        user.likes= user.likes-1
+        user.likes= user.likes+1
         user.save()
         post.save() 
-        notifs.delete()
-        return Response({'count':post.likes,'msg':'1'})
 
-    post.likes= post.likes+1
-    notification = Notification.objects.create(
-        sender=sender.username,
-        receiver=post.username,
-        post=post.caption, 
-        pic=post.pic,
-        post_id=post.id
+        res={'count':post.likes,'msg':'0'}
+        return Response(res)
 
-    )
- 
-    # serialized=NotificationSerializer(data=notification)
-
+    if(act=='dt'):
     
-    user= NewUser.objects.get(username=post.user.username)
-    user.likes= user.likes+1
-    user.save()
-    
+        if notifs.count()>0:
+            return Response({'count':post.likes,'msg':'1'})
 
-    post.save() 
 
-    res={'count':post.likes,'msg':'0'}
-    return Response(res)
+        post.likes= post.likes+1
+        Notification.objects.create(
+            sender=sender.username,
+            receiver=post.username,
+            post=post.caption, 
+            pic=post.pic,
+            post_id=post.id
 
-@api_view(['GET'])
-def isLiked(request,id):
-    if not request.user.is_authenticated:
-        return Response({'error':'user not authenticated'})
+        )
+            
+        user= NewUser.objects.get(username=post.user.username)
+        user.likes= user.likes+1
+        user.save()
+        post.save() 
 
-    sender=request.user
+        res={'count':post.likes,'msg':'0'}
+        return Response(res)
 
-    notifs=Notification.objects.filter(sender=sender,post_id=id)
+    if(act=='chk'):
 
-    if notifs.count()>0:
-        return Response({'msg':'1'})
+        if notifs.count()>0:
+            return Response({'count':post.likes,'msg':'1'})
 
-    else:
-        return Response({'msg':'0'})
-
+        return Response({'count':post.likes,'msg':'0'})
