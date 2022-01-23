@@ -71,6 +71,11 @@ def updateCfp(request):
     
 @api_view(['POST'])
 def registerUser(request):  
+    usn= request.data.get('username')
+
+    if NewUser.objects.filter(username=usn).exists():
+        return Response({'token':'null','code':101})
+
     serialized= CustomUserSerializer(data=request.data)
     data={}
     if serialized.is_valid():
