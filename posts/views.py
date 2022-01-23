@@ -73,6 +73,8 @@ def likepost(request,id,act):
     sender=request.user
 
     notifs=Notification.objects.filter(sender=sender,post_id=id)
+    
+    
 
     if(act=='like'):
     
@@ -84,7 +86,13 @@ def likepost(request,id,act):
             user.save()
             post.save() 
             notifs.delete()
-            return Response({'count':post.likes,'msg':'1'})
+            last_notif= Notification.objects.filter(post_id=id).order_by('-date').last()
+            if last_notif is not None:
+                usr= last_notif.sender
+
+            else:
+                usr="" 
+            return Response({'count':post.likes,'msg':'1','usr':usr})
 
 
         post.likes= post.likes+1
@@ -101,14 +109,20 @@ def likepost(request,id,act):
         user.likes= user.likes+1
         user.save()
         post.save() 
+        last_notif= Notification.objects.filter(post_id=id).order_by('-date').last()
+        if last_notif is not None:
+            usr= last_notif.sender
 
-        res={'count':post.likes,'msg':'0'}
+        else:
+            usr="" 
+
+        res={'count':post.likes,'msg':'0','usr':usr}
         return Response(res)
 
     if(act=='dt'):
     
         if notifs.count()>0:
-            return Response({'count':post.likes,'msg':'1'})
+            return Response({'count':post.likes,'msg':'1','usr':usr})
 
 
         post.likes= post.likes+1
@@ -120,18 +134,31 @@ def likepost(request,id,act):
             post_id=post.id
 
         )
+        last_notif= Notification.objects.filter(post_id=id).order_by('-date').last()
+        if last_notif is not None:
+            usr= last_notif.sender
+
+        else:
+            usr="" 
             
         user= NewUser.objects.get(username=post.user.username)
         user.likes= user.likes+1
         user.save()
         post.save() 
 
-        res={'count':post.likes,'msg':'0'}
+        res={'count':post.likes,'msg':'0','usr':usr}
         return Response(res)
 
     if(act=='chk'):
+        last_notif= Notification.objects.filter(post_id=id).order_by('-date').last()
+        if last_notif is not None:
+            usr= last_notif.sender
+
+        else:
+            usr=""
+
 
         if notifs.count()>0:
-            return Response({'count':post.likes,'msg':'1'})
+            return Response({'count':post.likes,'msg':'1','usr':usr})
 
-        return Response({'count':post.likes,'msg':'0'})
+        return Response({'count':post.likes,'msg':'0','usr':usr})
