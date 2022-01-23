@@ -7,5 +7,6 @@ urlpatterns=[
     path('getposts/<int:id>',views.getpost),
     path('sortedposts',views.sortedposts),
     path('addpost',views.addpost),
-    path('likepost/<int:id>/<str:act>',views.likepost)
+    path('likepost/<int:id>/<str:act>',views.likepost),
+    path('postaction/<int:id>/<str:act>',views.admin_action)
 ]

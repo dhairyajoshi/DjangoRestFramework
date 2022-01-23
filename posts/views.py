@@ -162,3 +162,59 @@ def likepost(request,id,act):
             return Response({'count':post.likes,'msg':'1','usr':usr})
 
         return Response({'count':post.likes,'msg':'0','usr':usr})
+
+
+@api_view(['POST'])
+def admin_action(request,id,act):
+
+    
+    if not request.user.is_authenticated:
+        return Response({'error':'user not authenticated'})
+
+    post = Post.objects.get(id=id)
+
+    if not request.user.is_staff:
+        if post.username==request.user.username:
+            if act=='del':
+                likes= post.likes
+                user= NewUser.objects.get(username=request.user.username)
+                user.likes= user.likes-likes
+                user.posts= user.posts-1
+                user.save()
+                
+                post.delete()
+                return Response({'msg':'Post deleted'})
+
+            else:
+                return Response({'msg':'Nice try, peasant'})
+
+        return Response({'msg':'Nice try, peasant'})
+
+    if act=='del':
+        likes= post.likes
+        user= NewUser.objects.get(username=post.username)
+        user.likes= user.likes-likes
+        user.posts= user.posts-1
+        user.save()
+                
+        post.delete()
+        return Response({'msg':'Post deleted'})
+
+    if act=='hid':
+        if post.status=='p':
+            post.status='d'
+            post.save()
+            return Response({'msg':'Post hidden'})
+        
+        else:
+            post.status='p'
+            post.save()
+            return Response({'msg':'Post made public'})
+        
+        
+
+    
+
+    
+            
+    
