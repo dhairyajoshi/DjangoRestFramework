@@ -82,6 +82,7 @@ def registerUser(request):
         instance=serialized.save() 
         refresh = RefreshToken.for_user(instance)
         data['token']=str(refresh.access_token)
+        data['code']=200
 
 
     return Response(data)
