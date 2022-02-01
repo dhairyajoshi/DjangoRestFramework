@@ -12,7 +12,7 @@ urlpatterns = [
     path('post/',include('posts.urls')),
     # path('users/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('users/',include('accounts.urls'))
+    path('users/',include('accounts.urls' ))
 ]
 
 urlpatterns+= static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
