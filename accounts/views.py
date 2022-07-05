@@ -102,9 +102,10 @@ def loginUser(request):
         refresh = RefreshToken.for_user(user)
         # data['user']=serialized.data
         data['token']=str(refresh.access_token) 
+        data['msg']='success'
     
     else: 
-        data['error']='wrong credentials'
+        data['msg']='error'
     
 
     return Response(data)
@@ -127,13 +128,16 @@ def getnotifs(request):
 @api_view(['GET'])
 def getinfo(request):
     if not request.user.is_authenticated:
-        return Response({'error':'user not authenticated'})
+        return Response({'msg':'user not authenticated'})
 
     data= NewUser.objects.get(username=request.user.username)
 
     serialized = CustomUserSerializer(data,many=False)
+    context={}
+    context['user']=serialized.data
+    context['msg']='authenticated'
 
-    return Response(serialized.data)
+    return Response(context)
 
     
 @api_view(['GET'])
