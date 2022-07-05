@@ -103,6 +103,7 @@ def loginUser(request):
         # data['user']=serialized.data
         data['token']=str(refresh.access_token) 
         data['msg']='success'
+        data['user']=serialized.data
     
     else: 
         data['msg']='error'
