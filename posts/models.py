@@ -18,7 +18,7 @@ class Post(models.Model):
     options=(('d', 'Draft'),
     ('p', 'Published'),)
 
-    caption= models.CharField(max_length=150)
+    caption= models.CharField(max_length=150,null=True,blank=True)
     username= models.CharField(max_length=150,default="none")
     user= models.ForeignKey(
         settings.AUTH_USER_MODEL ,on_delete=models.CASCADE,default=None
