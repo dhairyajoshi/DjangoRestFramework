@@ -53,7 +53,7 @@ def sortedposts(request):
 @api_view(['POST'])
 def addpost(request):
     if not request.user.is_authenticated:
-        return Response({'error':'user not authenticated'})
+        return Response({'msg':'user not authenticated'})
     serialized = PostSerializer(data=request.data)
 
     if serialized.is_valid():
